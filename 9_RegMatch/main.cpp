@@ -1,72 +1,62 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
-bool isMatch(string s, string p)
+bool charMatch(char &s, char &r)
 {
-    int p_start = 0, p_end, p_len = p.size();
-    int s_start = 0, s_end, s_len = s.size();
-    while (p_start < p_len)
+    return s == r || r == '.';
+}
+
+bool isMatch(string str, string reg)
+{
+    str = " " + str;
+    reg = " " + reg;
+    int s_len = str.size(), r_len = reg.size();
+    vector<vector<bool>> dp(s_len, vector<bool>(r_len));
+
+    dp[0][0] = true;
+
+    for (size_t i = 0; i < s_len; i++)
     {
-        p_end = p.find('*', p_start); // *
-        if (p_end != p.npos)
+        for (size_t j = 1; j < r_len; j++)
         {
-            // 找到了*
-            p_end--; // *前面的字符
-            s_end = s_start + (p_end - p_start);
-            if (s_end > s_len)
+            if (reg[j] == '*')
             {
-                return false;
-            }
-            // 处理普通字符(包括.)
-            for (size_t i = p_start, j = s_start; i < p_end; i++, j++)
-            {
-                if (p[i] == '.' || p[i] == s[j])
+                if (charMatch(str[i], reg[j - 1]))
                 {
-                    continue;
+                    // 匹配当前，扔掉str末尾
+                    if (i > 0)
+                    {
+                        dp[i][j] = dp[i][j] | dp[i - 1][j];
+                    }
+
+                    // 不匹配当前，扔掉*
+                    dp[i][j] = dp[i][j] | dp[i][j - 2];
                 }
-                return false;
-            }
-            // 处理 p[p_end]*
-            size_t count = 0;
-            while ((p[p_end] == '.' || s[s_end] == p[p_end]) && s_end < s_len)
-            {
-                s_end++;
-                count++;
-            }
-            if (count != 1)
-            { // *匹配成功
-                s_start = s_end;
-                p_start = p_end + 2;
+                else
+                {
+                    dp[i][j] = dp[i][j - 2];
+                }
             }
             else
             {
-                return false;
-            }
-        }
-        else // 没有*
-        {
-            if (p_len - p_start != s_len - s_start)
-            {
-                return false;
-            }
-            // 处理普通字符(包括.)
-            for (size_t i = p_start, j = s_start; i < p_len; i++, j++)
-            {
-                if (p[i] == '.' || p[i] == s[j])
+                // 一般情况
+                if (charMatch(str[i], reg[j]))
                 {
-                    continue;
+                    if (i > 0)
+                    {
+                        dp[i][j] = dp[i][j] | dp[i - 1][j - 1];
+                    }
                 }
-                return false;
             }
-            return true;
         }
     }
-    return s_start >= s_len;
+    return dp[s_len - 1][r_len - 1];
 }
 
 int main()
 {
-    cout << isMatch("mississippi", "mis*is*p*.") << endl;
+    cout << isMatch("ab", ".*") << endl;
 }
