@@ -11,5 +11,24 @@
 
 ### 2021/6/23
 
-* void *memset(void *str, int c, size_t n)   ->    这里的n是指 sizeof(str)*len 总的字符数
+* void *memset(void *str, int c, size_t n)   ->    这里的n是指 sizeof(str)*len ，总的字节数
+* sizeof() 获取的是对象类型的字节数
+* > sizeof(...)是运算符，其值在编译时即计算好了，参数可以是数组、指针、类型、对象、函数等。它的功能是：获得保证能容纳实现所建立的最大对象的字节大小。由于在编译时计算，因此sizeof不能用来返回动态分配的内存空间的大小。
+    strlen(...)是函数，要在运行时才能计算。参数必须是字符型指针（char*）。当数组名作为参数传入时，实际上数组就退化成指针了。它的功能是：返回字符串的长度。该字符串可能是自己定义的，也可能是内存中随机的，该函数实际完成的功能是从代表该字符串的第一个地址开始遍历，直到遇到结束符'\0'。返回的长度大小不包括'\0'。
 * string.pushback(char)
+
+### 2021/7/1
+
+* 构建pair对象有两种方法
+  
+  ```C++
+  std::pair<int, float>(1, 1.1);
+  std::make_pair(1, 1.1); // 缺点是会自动判断类型
+  ```
+
+* 使用auto循环取值时，使用引用速度更快
+  
+  ```C++
+  vector<vector<int>> vector_list;
+  for(auto & list : vector_list){}
+  ```
